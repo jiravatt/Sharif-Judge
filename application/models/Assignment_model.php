@@ -190,14 +190,16 @@ class Assignment_model extends CI_Model
 	{
 		$result = $this->db->order_by('id')->get('assignments')->result_array();
 		$assignments = array();
+
+		$this->load->model('submit_model');
+
 		foreach ($result as $item)
 		{
 			// For students
 			if ( $this->user->level == 0 )
 			{
 				// return only their own number of submissions
-				$user_submission = $this->db->select('submit_id')->get_where('submissions', array('username' => $this->user->username, 'assignment' => $item['id']))->row();
-				$item['total_submits'] = (int) $user_submission->num_rows;
+				$item['total_submits'] = $this->submit_model->count_all_submissions($item['id'], 0, $this->user->username);
 			}
 
 			// For students and teachers
