@@ -84,7 +84,8 @@ $(document).ready(function(){
 						<a dir="auto" href="{{ site_url("problems/#{description_assignment.id}/#{one_problem.id}") }}">{{ one_problem.name }}</a>
 					</td>
 					<td>{{ one_problem.score }}</td>
-					<td>{{ one_problem.is_upload_only ? 'Yes' : 'No' }}</td>
+					<td>{{ one_problem.pre_score == -1 ? '-' : one_problem.final_score }}</td>
+					{# <td>{{ one_problem.is_upload_only ? 'Yes' : 'No' }}</td> #}
 				</tr>
 			{% endfor %}
 		</table>
@@ -116,9 +117,7 @@ $(document).ready(function(){
 
 </div>
 {% else %}
-<div class="problem_description">
 	<p>{{ error_txt }}</p>
-</div>
 {% endif %}
 {% endblock %}
 
