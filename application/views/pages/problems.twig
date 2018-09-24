@@ -68,24 +68,29 @@ $(document).ready(function(){
 			<p style="text-align: center;">Nothing to show...</p>
 		{% endif %}
 
-		<table class="sharif_table">
+		<table class="problem_table">
 			<thead>
 			<tr>
-				<th rowspan="2">#</th>
+				{{ user.level > 0 ? '<th rowspan="2">#</th>' : '' }} 
 				<th rowspan="2">Problem</th>
 				<th rowspan="2">Score</th>
-				<th rowspan="2">Upload<br>Only</th>
+				<th rowspan="2">{{ user.level > 0 ? 'Upload<br>Only' : 'Final<br/>score' }}</th>
 			</tr>
 			</thead>
 			{% for one_problem in user_problems %}
 				<tr{{ problem.id == one_problem.id ? ' class="hl"' }}>
-					<td>{{ one_problem.id }}</td>
+					{% if user.level > 0 %}
+						<td>{{ one_problem.id }}</td>
+					{% endif %}
 					<td>
 						<a dir="auto" href="{{ site_url("problems/#{description_assignment.id}/#{one_problem.id}") }}">{{ one_problem.name }}</a>
 					</td>
 					<td>{{ one_problem.score }}</td>
-					<td>{{ one_problem.pre_score == -1 ? '-' : one_problem.final_score }}</td>
-					{# <td>{{ one_problem.is_upload_only ? 'Yes' : 'No' }}</td> #}
+					{% if user.level > 0 %}
+						<td>{{ one_problem.is_upload_only ? 'Yes' : 'No' }}</td>
+					{% else %}
+						<td>{{ one_problem.pre_score == -1 ? '-' : one_problem.final_score }}</td>
+					{% endif %}
 				</tr>
 			{% endfor %}
 		</table>
