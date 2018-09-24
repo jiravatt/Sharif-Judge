@@ -43,16 +43,22 @@ class Assignments extends CI_Controller
 
 		foreach ($data['all_assignments'] as &$item)
 		{
-			$extra_time = $item['extra_time'];
-			$delay = shj_now()-strtotime($item['finish_time']);;
-			ob_start();
-			if ( eval($item['late_rule']) === FALSE )
-				$coefficient = "error";
-			if (!isset($coefficient))
-				$coefficient = "error";
-			ob_end_clean();
-			$item['coefficient'] = $coefficient;
-			$item['finished'] = ($delay > $extra_time);
+			if ($item['forever'] == 0)
+			{
+				$extra_time = $item['extra_time'];
+				$delay = shj_now()-strtotime($item['finish_time']);;
+				ob_start();
+				if ( eval($item['late_rule']) === FALSE )
+					$coefficient = "error";
+				if (!isset($coefficient))
+					$coefficient = "error";
+				ob_end_clean();
+				$item['coefficient'] = $coefficient;
+				$item['finished'] = ($delay > $extra_time);
+			} else {
+				$item['finish_time'] = '-';
+				$item['coefficient'] = '100';
+			}
 			
 			// LEVEL mode
 			if ( $item['level_mode'] == 1 && $this->user->level == 0 )
@@ -328,7 +334,9 @@ class Assignments extends CI_Controller
 			$data['edit_assignment'] = $this->assignment_model->assignment_info($this->edit_assignment);
 			if ($data['edit_assignment']['id'] === 0)
 				show_404();
-			$data['problems'] = $this->assignment_model->all_problems($this->edit_assignment, true);
+			else if ($data['edit_assignment']['late_rule'] === NULL)
+				$data['edit_assignment']['late_rule'] = $this->settings_model->get_setting('default_late_rule');
+			$data['problems'] = $this->assignment_model->all_problems($this->edit_assignment, 0, true);
 		}
 		else
 		{
@@ -405,10 +413,14 @@ class Assignments extends CI_Controller
 
 		$this->form_validation->set_rules('assignment_name', 'assignment name', 'required|max_length[50]');
 		$this->form_validation->set_rules('start_time', 'start time', 'required');
-		$this->form_validation->set_rules('finish_time', 'finish time', 'required');
-		$this->form_validation->set_rules('extra_time', 'extra time', 'required');
+		if ($this->input->post('forever') == 0)
+		{
+			$this->form_validation->set_rules('finish_time', 'finish time', 'required');
+			$this->form_validation->set_rules('late_rule', 'coefficient rule', 'required');
+			$this->form_validation->set_rules('extra_time', 'extra time', 'required');
+		}
+		
 		$this->form_validation->set_rules('participants', 'participants', '');
-		$this->form_validation->set_rules('late_rule', 'coefficient rule', 'required');
 		$this->form_validation->set_rules('name[]', 'problem name', 'required|max_length[50]');
 		$this->form_validation->set_rules('level[]', 'problem level', 'required|greater_than_equal_to[0]');
 		$this->form_validation->set_rules('score[]', 'problem score', 'required|integer');

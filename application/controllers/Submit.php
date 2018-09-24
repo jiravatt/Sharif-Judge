@@ -37,15 +37,26 @@ class Submit extends CI_Controller
 		else
 		    $this->problems = $this->assignment_model->all_problems($this->user->selected_assignment['id'], $level);
 
-		$extra_time = $this->user->selected_assignment['extra_time'];
-		$delay = shj_now()-strtotime($this->user->selected_assignment['finish_time']);;
-		ob_start();
-		if ( eval($this->user->selected_assignment['late_rule']) === FALSE )
-			$coefficient = "error";
-		if (!isset($coefficient))
-			$coefficient = "error";
-		ob_end_clean();
+		if ($this->user->selected_assignment['forever'] == 0)
+		{
+			$extra_time = $this->user->selected_assignment['extra_time'];
+			$delay = shj_now()-strtotime($this->user->selected_assignment['finish_time']);
+			ob_start();
+			if ( eval($this->user->selected_assignment['late_rule']) === FALSE )
+				$coefficient = "error";
+			if (!isset($coefficient))
+				$coefficient = "error";
+			ob_end_clean();
+		}
+		else
+		{
+			$extra_time = 0;
+			$delay = 0;
+			$coefficient = 100;
+		}
+
 		$this->coefficient = $coefficient;
+		
 
 	}
 
@@ -170,15 +181,18 @@ class Submit extends CI_Controller
 		}
 		if ($this->user->selected_assignment['id'] == 0)
 			$this->data['error']='Please select an assignment first.';
-	    elseif ($this->user->level < 2 &&  ! $this->assignment_model->is_participant($this->user->selected_assignment['participants'],$this->user->username) )
+	    else if ($this->user->level < 2 &&  ! $this->assignment_model->is_participant($this->user->selected_assignment['participants'],$this->user->username) )
 			$this->data['error'] = 'You cannot submit this assignment right now.';
-		elseif ($this->user->level < 2 && shj_now() < strtotime($this->user->selected_assignment['start_time']))
+		else if ($this->user->level < 2 && shj_now() < strtotime($this->user->selected_assignment['start_time']))
 			$this->data['error'] = 'Selected assignment has not started.';
-		elseif ($this->user->level == 0 && ! $this->user->selected_assignment['open'])
+		else if ($this->user->level == 0 && ! $this->user->selected_assignment['open'])
 			$this->data['error'] = 'Selected assignment is closed.';
-		elseif ($this->user->level == 0 && shj_now() > strtotime($this->user->selected_assignment['finish_time'])+$this->user->selected_assignment['extra_time']) // deadline = finish_time + extra_time
-			$this->data['error'] = 'Selected assignment has finished.';
-		else
+		else if ($this->user->selected_assignment['forever'] == 0)
+			if ($this->user->level == 0 && shj_now() > strtotime($this->user->selected_assignment['finish_time'])+$this->user->selected_assignment['extra_time']) // deadline = finish_time + extra_time
+				$this->data['error'] = 'Selected assignment has finished.';
+			else
+				$this->data['error'] = 'none';
+		else //if ($this->user->selected_assignment['forever'] == 1)
 			$this->data['error'] = 'none';
 
 //		if ($this->user->level > 0)
@@ -226,8 +240,11 @@ class Submit extends CI_Controller
 			show_error('Selected assignment has been closed.');
 		if ($this->user->level==0 && $now < strtotime($this->user->selected_assignment['start_time']))
 			show_error('Selected assignment has not started.');
-		if ($this->user->level==0 && $now > strtotime($this->user->selected_assignment['finish_time'])+$this->user->selected_assignment['extra_time'])
-			show_error('Selected assignment has finished.');
+		if ($this->user->selected_assignment['forever'] == 0)
+		{
+			if ($this->user->level==0 && $now > strtotime($this->user->selected_assignment['finish_time'])+$this->user->selected_assignment['extra_time'])
+				show_error('Selected assignment has finished.');
+		}
 		if ($this->user->level==0 &&  ! $this->assignment_model->is_participant($this->user->selected_assignment['participants'],$this->user->username) )
 			show_error('You are not registered for submitting.');
 		

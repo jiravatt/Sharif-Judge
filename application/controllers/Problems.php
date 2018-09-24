@@ -93,19 +93,22 @@ class Problems extends CI_Controller
 			$data['can_view'] = FALSE;
 			$data['error_txt'] = 'Problem does not exist.';
 			$data['can_submit'] = FALSE;
-		} else if ( ($this->user->level < 2) && shj_now() < strtotime($assignment['start_time']) ) {
+		} else if ($this->user->level < 2 && shj_now() < strtotime($assignment['start_time']) ) {
 			if ( $assignment['hide_before_start'] == 1 )
 				$data['error_txt'] = 'Problem does not exist.';
 			else
 				$data['error_txt'] = 'Please wait until this assignment starts.';
 			$data['can_view'] = FALSE;
-			$data['can_submit'] = FALSE;
+			$data['can_submit'] = FALSE;		
 		} else if ( ($this->user->level == 0) && ! ($assignment['open']) ) {
 			$data['can_view'] = FALSE;
 			$data['error_txt'] = 'This assignment has been closed.';
 			$data['can_submit'] = FALSE;
-		} else if ( ($this->user->level == 0) && shj_now() > strtotime($assignment['finish_time'])+$assignment['extra_time'] ) {
-		    $data['can_submit'] = FALSE;
+		} else if ( $assignment['forever'] == 0 ) {
+			if (($this->user->level == 0) && shj_now() > strtotime($assignment['finish_time'])+$assignment['extra_time'] && $assignment['open'])
+			{
+				$data['can_submit'] = FALSE;
+			}
 		} else if ( $problem_id > $data['description_assignment']['problems'] ) {
 			$data['can_view'] = FALSE;
 			$data['error_txt'] = 'Problem does not exist.';

@@ -59,6 +59,22 @@
 		$('#finish_time').datetimepicker({
 			timeFormat: 'HH:mm:ss'
 		});
+		$(document).on('change', "#form_a_forever", function(){
+			var forever_checkbox = document.getElementById("form_a_forever");
+			if (forever_checkbox.checked)
+			{
+				$("#finish_time").attr("disabled", "disabled");
+				$("#form_extra_time").attr("disabled", "disabled");
+				$("#form_late_rule").attr("disabled", "disabled");	
+			}
+			else
+			{
+				$("#finish_time").removeAttr("disabled");
+				$("#form_extra_time").removeAttr("disabled");
+				$("#form_late_rule").removeAttr("disabled");
+			}
+		});
+		$("#form_a_forever").change();
 	});
 </script>
 {% endblock %}
@@ -141,6 +157,12 @@
 		<label for="form_a_open" class="default">Open</label>
 		<span class="form_comment space-left">Open or close this assignment</span>
 		{{ form_error('open', '<div class="shj_error">', '</div>') }}
+	</p>
+	<p class="input_p">
+		<input id="form_a_forever" type="checkbox" name="forever" value="1" {{ edit ? (edit_assignment.forever ? 'checked') : set_checkbox('forever', '1')|raw }} />
+		<label for="form_a_forever" class="default">Forever</label>
+		<span class="form_comment space-left">Check if this assignment must be always shown</span>
+		{# {{ form_error('open', '<div class="shj_error">', '</div>') }} #}
 	</p>
 	<p class="input_p">
 		<input id="form_a_hide" type="checkbox" name="hide_before_start" value="1" {{ edit ? (edit_assignment.hide_before_start ? 'checked') : set_checkbox('hide_before_start', '1')|raw }} />

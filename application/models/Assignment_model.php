@@ -31,39 +31,51 @@ class Assignment_model extends CI_Model
 	{
 		// Start Database Transaction
 		$this->db->trans_start();
-
-		$extra_items = explode('*', $this->input->post('extra_time'));
-		$extra_time = 1;
-		foreach($extra_items as $extra_item)
-		{
-			$extra_time *= $extra_item;
-		}
+		
 		$assignment = array(
 			'id' => $id,
 			'name' => $this->input->post('assignment_name'),
 			'problems' => $this->input->post('number_of_problems'),
+			'start_time' => date('Y-m-d H:i:s', strtotime($this->input->post('start_time'))),
 			'total_submits' => 0,
 			'open' => ($this->input->post('open')===NULL?0:1),
+			'forever' => ($this->input->post('forever')===NULL?0:1),
 			'hide_before_start' => ($this->input->post('hide_before_start')===NULL?0:1),
 			'level_mode' => ($this->input->post('level_mode')===NULL?0:1),
 			'max_level' => 0,
 			'scoreboard' => ($this->input->post('scoreboard')===NULL?0:1),
 			'javaexceptions' => ($this->input->post('javaexceptions')===NULL?0:1),
 			'description' => '', /* todo */
-			'start_time' => date('Y-m-d H:i:s', strtotime($this->input->post('start_time'))),
-			'finish_time' => date('Y-m-d H:i:s', strtotime($this->input->post('finish_time'))),
-			'extra_time' => $extra_time*60,
-			'late_rule' => $this->input->post('late_rule'),
 			'participants' => $this->input->post('participants')
 		);
-		if($edit)
+		if ($assignment['forever'] == 1)
+		{
+			$assignment['finish_time'] = NULL;
+			$assignment['late_rule'] = NULL;
+			$assignment['extra_time'] = 0;
+		}
+		else
+		{
+			$assignment['finish_time'] = date('Y-m-d H:i:s', strtotime($this->input->post('finish_time')));
+			$assignment['late_rule'] = $this->input->post('late_rule');
+			$extra_items = explode('*', $this->input->post('extra_time'));
+			$extra_time = 1;
+			foreach($extra_items as $extra_item)
+			{
+				$extra_time *= $extra_item;
+			}
+			$assignment['extra_time'] = $extra_time*60;
+		}
+
+		if ($edit)
 		{
 			$before = $this->db->get_where('assignments', array('id'=>$id))->row_array();
 			unset($assignment['total_submits']);
 			$this->db->where('id', $id)->update('assignments', $assignment);
 			// each time we edit an assignment, we should update coefficient of all submissions of that assignment
-			if ($assignment['extra_time']!=$before['extra_time'] OR $assignment['start_time']!=$before['start_time'] OR $assignment['finish_time']!=$before['finish_time'] OR $assignment['late_rule']!=$before['late_rule'])
-				$this->_update_coefficients($id, $assignment['extra_time'], $assignment['finish_time'], $assignment['late_rule']);
+			if ($assignment['forever'] == 0)
+				if ($assignment['extra_time']!=$before['extra_time'] OR $assignment['start_time']!=$before['start_time'] OR $assignment['finish_time']!=$before['finish_time'] OR $assignment['late_rule']!=$before['late_rule'])
+					$this->_update_coefficients($id, $assignment['extra_time'], $assignment['finish_time'], $assignment['late_rule']);
 		}
 		else
 			$this->db->insert('assignments', $assignment);
