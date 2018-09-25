@@ -92,29 +92,57 @@
 //            editor.setTheme("ace/theme/chrome");
             editor.session.setMode("ace/mode/text");
             
-            $(document).on('change', "#languages", function(){
+            $("#languages").change( function(event) {
+				event.preventDefault();
 		        var lang_id = $("#languages").val();
-		        if (lang_id != 0) {
-		            switch (lang_id)
-		            {
-		                case "C":
-		                    editor.session.setMode("ace/mode/c_cpp");
-		                    break;
-		                case "C++":
-		                    editor.session.setMode("ace/mode/c_cpp");
-		                    break;
-		                case "Python 3":
-		                    editor.session.setMode("ace/mode/python");
-		                    break;
-		                case "Java":
-		                    editor.session.setMode("ace/mode/java");
-		                    break;
-		            }
-		        } else {
-			        editor.session.setMode('ace/mode/text');
+		        switch (lang_id)
+		        {
+		            case "C":
+		                editor.session.setMode("ace/mode/c_cpp");
+						var lang = 'c';
+		    	    	break;
+		            case "C++":
+		                editor.session.setMode("ace/mode/c_cpp");
+						var lang = 'cpp';
+		                break;
+		            case "Python 3":
+		                editor.session.setMode("ace/mode/python");
+						var lang = 'py3';
+		                break;
+		            case "Java":
+		                editor.session.setMode("ace/mode/java");
+						var lang = 'java'
+		                break;
+					default:
+						editor.session.setMode('ace/mode/text');
+						var lang = '';
+						break;
+		        }
+				
+				/* TO-DO : WHY I CAN'T USE "POST" METHOD !!!???!!! */
+
+				if (lang != '')
+				{
+					$.ajax({
+						type: 'GET',
+						url: shj.site_url + 'submit/template',
+						dataType: 'json',
+						data: {
+							assignment: {{ user.selected_assignment.id }},
+							problem: $("#problems").val(),
+							language: lang
+						},
+						success: function (response) {
+							if (response.done)
+								editor.session.setValue(response.data);
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) { 
+        					alert("Status: " + textStatus + " Error: " + errorThrown); 
+						}
+					});					
 		        }
 	        });
-            $("#languages").change();
+            //$("#languages").change();
             
             editor.getSession().on('change', function () {
                 textarea.val(editor.getSession().getValue());

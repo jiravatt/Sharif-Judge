@@ -181,18 +181,26 @@ class Assignments extends CI_Controller
 			if (file_exists($path))
 				$this->zip->add_data("p{$i}/mainprog.py", file_get_contents($path));
 
-			// Add mainprog.* into a zip file
-			$path = "$root_path/p{$i}/mainprog.cpp"; 
+			// Add template.* into a zip file
+			$path = "$root_path/p{$i}/template.cpp"; 
 			if (file_exists($path))
-				$this->zip->add_data("p{$i}/mainprog.cpp", file_get_contents($path));
+				$this->zip->add_data("p{$i}/template.cpp", file_get_contents($path));
 			
-			$path = "$root_path/p{$i}/mainprog.c";
+			$path = "$root_path/p{$i}/template.c";
 			if (file_exists($path))
-				$this->zip->add_data("p{$i}/mainprog.c", file_get_contents($path));
+				$this->zip->add_data("p{$i}/template.c", file_get_contents($path));
 			
-			$path = "$root_path/p{$i}/mainprog.py";
+			$path = "$root_path/p{$i}/template.py3";
 			if (file_exists($path))
-				$this->zip->add_data("p{$i}/mainprog.py", file_get_contents($path));
+				$this->zip->add_data("p{$i}/template.py3", file_get_contents($path));
+			
+			$path = "$root_path/p{$i}/template.py2";
+			if (file_exists($path))
+				$this->zip->add_data("p{$i}/template.py2", file_get_contents($path));
+			
+			$path = "$root_path/p{$i}/template.java";
+			if (file_exists($path))
+				$this->zip->add_data("p{$i}/template.java", file_get_contents($path));
 
 			$pdf_files = glob("$root_path/p{$i}/*.pdf");
 			if ($pdf_files)
@@ -542,7 +550,7 @@ class Assignments extends CI_Controller
 
 			// Extract new test cases and descriptions in temp directory
 			$this->load->library('unzip');
-			$this->unzip->allow(array('txt', 'cpp', 'html', 'md', 'pdf', 'py')); // To support mainprog.py
+			$this->unzip->allow(array('txt', 'cpp', 'html', 'md', 'pdf', 'py', 'py3', 'py2', 'java', 'c')); // To support mainprog.py + template.*
 			$extract_result = $this->unzip->extract($u_data['full_path'], $tmp_dir);
 
 			// Remove the zip file
@@ -617,5 +625,5 @@ class Assignments extends CI_Controller
 	}
 
 
-
+	
 }
