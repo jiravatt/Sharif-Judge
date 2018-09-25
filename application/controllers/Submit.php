@@ -202,7 +202,7 @@ class Submit extends CI_Controller
 		$this->twig->display('pages/submit.twig', $this->data);
         else if ($mode == 'editor')
         {
-            $this->data['code_txt'] = $code;
+            //$this->data['code_txt'] = $code;
             $this->twig->display('pages/editor.twig', $this->data);
         }
 
