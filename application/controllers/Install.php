@@ -102,10 +102,11 @@ class Install extends CI_Controller
 				'scoreboard'       => array('type' => 'TINYINT', 'constraint' => 1),
 				'javaexceptions'   => array('type' => 'TINYINT', 'constraint' => 1),
 				'description'      => array('type' => 'TEXT'),
+				'forever'          => array('type' => 'TINYINT', 'constraint' => 1),
 				'start_time'       => array('type' => $DATETIME),
-				'finish_time'      => array('type' => $DATETIME),
+				'finish_time'      => array('type' => $DATETIME, 'null' => TRUE),
 				'extra_time'       => array('type' => 'INT', 'constraint' => 11),
-				'late_rule'        => array('type' => 'TEXT'),
+				'late_rule'        => array('type' => 'TEXT', 'null' => TRUE),
 				'participants'     => array('type' => 'TEXT'),
 				'moss_update'      => array('type' => 'VARCHAR', 'constraint' => 30, 'default' => 'Never'),
 			);
