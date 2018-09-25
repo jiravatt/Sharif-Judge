@@ -576,15 +576,18 @@ class Assignment_model extends CI_Model
 			        'is_final' => 1,
 			        'username' => $username,
 			        'problem' => $problem['id']);
-			       
-			    $final_submission = $this->db->get_where('submissions', $arr)->row_array();
 			    
-			    $final_submit_cnt = count($final_submission);
+			    $final_submit_cnt = $this->db->where($arr)->count_all_results('submissions');
 			    
-                if ($final_submit_cnt == 0)
+                if ($final_submit_cnt != 1)
                     break;
-			    else if ($final_submission['pre_score'] != 10000)
-			        break;
+				else
+				{
+					$final_submission = $this->db->get_where('submissions', $arr)->row();
+					if ($final_submission->pre_score != 10000)
+			        	break;
+				}
+				
 			}
 			
 			// Check and set max-level to assignment
