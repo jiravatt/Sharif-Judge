@@ -573,20 +573,16 @@ class Assignment_model extends CI_Model
 			    }
 			    
 			    $arr = array('assignment' => $assignment_id,
-			        'is_final' => 1,
+			    //	'is_final' => 1,
 			        'username' => $username,
-			        'problem' => $problem['id']);
+					'problem' => $problem['id'],
+					'pre_score' => 10000,
+				);
 			    
-			    $final_submit_cnt = $this->db->where($arr)->count_all_results('submissions');
+			    $submit_cnt = $this->db->where($arr)->count_all_results('submissions');
 			    
-                if ($final_submit_cnt != 1)
+                if ($submit_cnt == 0)
                     break;
-				else
-				{
-					$final_submission = $this->db->get_where('submissions', $arr)->row();
-					if ($final_submission->pre_score != 10000)
-			        	break;
-				}
 				
 			}
 			
