@@ -157,15 +157,17 @@ class Assignments extends CI_Controller
 
 		for ($i=1 ; $i<=$number_of_problems ; $i++)
 		{
-
+			// Add testcase input folder into zip file
 			$path = "$root_path/p{$i}/in";
 			if (file_exists($path))
 				$this->zip->read_dir($path, FALSE, $root_path);
 
+			// Add testcase output folder into zip file
 			$path = "$root_path/p{$i}/out";
 			if (file_exists($path))
 				$this->zip->read_dir($path, FALSE, $root_path);
 
+			// Add tester src into zip file
 			$path = "$root_path/p{$i}/tester.cpp";
 			if ( ! empty(glob($path)) )
 				$this->zip->add_data("p{$i}/tester.cpp", file_get_contents($path));
@@ -175,7 +177,6 @@ class Assignments extends CI_Controller
 			if ( ! empty($pre_files) )
 				foreach ($pre_files as $pre_file)
 					$this->zip->add_data("p{$i}/".shj_basename($pre_file), file_get_contents($pre_file));
-
 
 			// Add postcode.* into zip file
 			$post_files = glob("$root_path/p{$i}/postcode.*");
@@ -188,6 +189,24 @@ class Assignments extends CI_Controller
 			if ( ! empty($template_files) )
 				foreach ($template_files as $template_file)
 					$this->zip->add_data("p{$i}/".shj_basename($template_file), file_get_contents($template_file));
+
+			// Add problem's pdf file into zip file
+			$pdf_files = glob("$root_path/p{$i}/*.pdf");
+			if ($pdf_files)
+			{
+				$path = $pdf_files[0];
+				$this->zip->add_data("p{$i}/".shj_basename($path), file_get_contents($path));
+			}
+
+			// Add problem's description (html) into zip file
+			$path = "$root_path/p{$i}/desc.html";
+			if (file_exists($path))
+				$this->zip->add_data("p{$i}/desc.html", file_get_contents($path));
+			
+			// Add problem's description (md) into zip file
+			$path = "$root_path/p{$i}/desc.md";
+			if (file_exists($path))
+				$this->zip->add_data("p{$i}/desc.md", file_get_contents($path));
 		}
 
 		$pdf_files = glob("$root_path/*.pdf");
