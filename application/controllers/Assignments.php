@@ -550,7 +550,7 @@ class Assignments extends CI_Controller
 
 			// Extract new test cases and descriptions in temp directory
 			$this->load->library('unzip');
-			$this->unzip->allow(array('txt', 'cpp', 'html', 'md', 'pdf', 'py', 'py3', 'py2', 'java', 'c')); // To support mainprog.py + template.*
+			$this->unzip->allow(array('txt', 'cpp', 'html', 'md', 'pdf', 'py', 'py2', 'java', 'c')); // To support mainprog.py + template.*
 			$extract_result = $this->unzip->extract($u_data['full_path'], $tmp_dir);
 
 			// Remove the zip file

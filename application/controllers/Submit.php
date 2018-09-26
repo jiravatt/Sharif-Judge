@@ -338,49 +338,40 @@ class Submit extends CI_Controller
 	 * Used by ajax request (for fetching content from template.*)
 	 */
 	public function template()
-	{
-		// TO DO: Change back to POST method !!!
-		
+	{		
 		 if ( ! $this->input->is_ajax_request() )
 		 	show_404();
 		
-		// if (empty($_POST))
-		// 	echo("NO POST!");
+		if (empty($_POST))
+			echo json_encode("NO POST!");
 
-		//echo json_encode("YES");
+		$this->form_validation->set_rules('assignment', 'Assignment ID', 'required|integer|greater_than[0]');
+		$this->form_validation->set_rules('problem', 'Problem', 'required|integer|greater_than[0]');
+		//$this->form_validation->set_rules('language', 'Language', 'required|in_list[c,cpp,py2,py,java]');
 
-		// $this->form_validation->set_rules('assignment', 'Assignment ID', 'required|integer|greater_than[0]');
-		// $this->form_validation->set_rules('problem', 'Problem', 'required|integer|greater_than[0]');
-		// $this->form_validation->set_rules('language', 'Language', 'required|in_list[c,cpp,py2,py3,java]');
-
-		if (true)//$this->form_validation->run())
+		if ($this->form_validation->run())
 		{
 			$done = 0;
 
 			// GET vars
-			$assignment_id = $this->input->get('assignment');
-			$problem_id = $this->input->get('problem');
-			$language = $this->input->get('language');
+			$assignment_id = $this->input->post('assignment');
+			$problem_id = $this->input->post('problem');
+			$language = $this->input->post('language');
 			$filename = 'template';
 
 			$assignments_root = rtrim($this->settings_model->get_setting('assignments_root'), '/');
 			$problem_dir = $assignments_root . '/assignment_' . $assignment_id . '/p' . $problem_id;
 			$full_path = $problem_dir . "/" . $filename . "." . $language;
 
-			//echo($full_path);
-
 			if (file_exists($full_path))
 			{
 				$data = file_get_contents($full_path);
 				$done = 1;
-				//show_error($data);
-				//echo('FOUND');
 			}
 			else
 			{
 				$done = 1;
 				$data = NULL;
-				//echo('NOT FOUND');
 			}
 				
 			$json_result = array(
@@ -390,7 +381,6 @@ class Submit extends CI_Controller
 		}
 		else
 			$json_result = array('done' => 0, 'data' => 'Input Error');
-			//echo('ERROR');
 
 		$this->output->set_header('Content-Type: application/json; charset=utf-8');
 		echo json_encode($json_result);
