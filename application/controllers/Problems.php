@@ -53,32 +53,18 @@ class Problems extends CI_Controller
 			'can_view' => TRUE,
 			'error_txt' => '',
 		);
-		
-		// LEVEL mode
-		if ($assignment['level_mode'] == 1 && $this->user->level < 2)
-		{
-		    $level = $this->assignment_model->get_current_level($assignment_id, $this->user->username);
-		    $data['user_problems'] = $this->assignment_model->all_problems($assignment_id, $level);
-		}
-		else
-		{
-		    $level = 0;
-		    $data['user_problems'] = $this->assignment_model->all_problems($assignment_id, 0, true);
-		}
 
 		$this->load->model('submit_model');
 		
 		// LEVEL mode
-		if ($assignment['level_mode'] == 1 && $this->user->level < 2)
+		if ($assignment['level_mode'] == 1 && $this->user->level == 0)
 		{
 		    $level = $this->assignment_model->get_current_level($assignment_id, $this->user->username);
-			// $data['user_problems'] = $this->assignment_model->all_problems($assignment_id, $level);
 			$data['user_problems'] = $this->submit_model->all_problems_score($assignment_id, $level);
 		}
 		else
 		{
 		    $level = 0;
-			// $data['user_problems'] = $this->assignment_model->all_problems($assignment_id, 0, true);
 			$data['user_problems'] = $this->submit_model->all_problems_score($assignment_id, 0, true);
 		}
 
@@ -124,7 +110,7 @@ class Problems extends CI_Controller
 			$data['can_view'] = FALSE;
 			$data['error_txt'] = 'Problem does not exist.';
 			$data['can_submit'] = FALSE;
-		} else if ( ($this->user->level < 2) && $assignment['level_mode'] == 1 && $data['all_problems'][$problem_id]['level'] > $level) {
+		} else if ( ($this->user->level == 0) && $assignment['level_mode'] == 1 && $data['all_problems'][$problem_id]['level'] > $level) {
 		    $data['can_view'] = FALSE;
 			$data['error_txt'] = 'Problem does not exist.';
 			$data['can_submit'] = FALSE;

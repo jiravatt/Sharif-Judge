@@ -31,12 +31,15 @@ class Submit extends CI_Controller
 		$this->assignment_root = $this->settings_model->get_setting('assignments_root');
 
 		// LEVEL mode
-		$level = $this->assignment_model->get_current_level($this->user->selected_assignment['id'], $this->user->username);
-		if ($level == 0 || $this->user->level >= 2)
-		    $this->problems = $this->assignment_model->all_problems($this->user->selected_assignment['id'], 0, true);
+		if ($this->user->selected_assignment['level_mode'] == 1 && $this->user->level == 0)
+		{
+			$level = $this->assignment_model->get_current_level($this->user->selected_assignment['id'], $this->user->username);
+			$this->problems = $this->assignment_model->all_problems($this->user->selected_assignment['id'], $level);
+		}
 		else
-		    $this->problems = $this->assignment_model->all_problems($this->user->selected_assignment['id'], $level);
+		    $this->problems = $this->assignment_model->all_problems($this->user->selected_assignment['id'], 0, true);
 
+		    
 		if ($this->user->selected_assignment['forever'] == 0)
 		{
 			$extra_time = $this->user->selected_assignment['extra_time'];
