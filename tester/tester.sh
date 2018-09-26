@@ -198,7 +198,19 @@ COMPILE_BEGIN_TIME=$(($(date +%s%N)/1000000));
 
 if [ "$EXT" = "java" ]; then
 	cp ../java.policy java.policy
-	cp $PROBLEMPATH/$UN/$FILENAME.java $MAINFILENAME.java
+	# If precode.java exists, add user's code into it
+	if [ -f "$PROBLEMPATH/precode.java" ]; then
+		cp $PROBLEMPATH/precode.java $MAINFILENAME.java
+		cat $PROBLEMPATH/$UN/$FILENAME.java >> $MAINFILENAME.java
+		shj_log "precode.java found! User's code has been appended into it."
+	else
+		cp $PROBLEMPATH/$UN/$FILENAME.java $MAINFILENAME.java
+	fi
+	# If postcode.java exists, append into user's written code
+	if [ -f "$PROBLEMPATH/postcode.java" ]; then
+		cat $PROBLEMPATH/postcode.java >> $MAINFILENAME.java
+		shj_log "postcode.java found! It has been appended into user's code."
+	fi
 	shj_log "Compiling as Java"
 	javac $MAINFILENAME.java >/dev/null 2>cerr
 	EXITCODE=$?
@@ -226,6 +238,19 @@ fi
 ########################################################################################################
 
 if [ "$EXT" = "py2" ]; then
+	# If precode.py2 exists, add user's code into it
+	if [ -f "$PROBLEMPATH/precode.py2" ]; then
+		cp $PROBLEMPATH/precode.py2 $FILENAME.py
+		cat $PROBLEMPATH/$UN/$FILENAME.py >> $FILENAME.py
+		shj_log "precode.py2 found! User's code has been appended into it."
+	else
+		cp $PROBLEMPATH/$UN/$FILENAME.py $FILENAME.py
+	fi
+	# If postcode.py2 exists, append into user's written code
+	if [ -f "$PROBLEMPATH/postcode.py2" ]; then
+		cat $PROBLEMPATH/postcode.py2 >> $FILENAME.py
+		shj_log "postcode.py2 found! It has been appended into user's code."
+	fi
 	cp $PROBLEMPATH/$UN/$FILENAME.py $FILENAME.py
 	shj_log "Checking Python Syntax"
 	python2 -O -m py_compile $FILENAME.py >/dev/null 2>cerr
@@ -257,11 +282,18 @@ fi
 ########################################################################################################
 
 if [ "$EXT" = "py3" ]; then
-	cp $PROBLEMPATH/$UN/$FILENAME.py $FILENAME.py
-	# If mainprog.py exists, append into user's written code
-	if [ -f "$PROBLEMPATH/mainprog.py" ]; then
-		shj_log "mainprog.py found! It has been appended into user's code."
-		cat $PROBLEMPATH/mainprog.py >> $FILENAME.py
+	# If precode.py exists, add user's code into it
+	if [ -f "$PROBLEMPATH/precode.py" ]; then
+		cp $PROBLEMPATH/precode.py $FILENAME.py
+		cat $PROBLEMPATH/$UN/$FILENAME.py >> $FILENAME.py
+		shj_log "precode.py found! User's code has been appended into it."
+	else
+		cp $PROBLEMPATH/$UN/$FILENAME.py $FILENAME.py
+	fi
+	# If postcode.py exists, append into user's written code
+	if [ -f "$PROBLEMPATH/postcode.py" ]; then
+		cat $PROBLEMPATH/postcode.py >> $FILENAME.py
+		shj_log "postcode.py found! It has been appended into user's code."
 	fi
 	shj_log "Checking Python Syntax"
 	python3 -O -m py_compile $FILENAME.py >/dev/null 2>cerr
@@ -299,18 +331,32 @@ if [ "$EXT" = "c" ] || [ "$EXT" = "cpp" ]; then
 		C_OPTIONS="$C_OPTIONS -std=c++14" # Use C++ 2014 Standard
 	fi
 	EXEFILE="s_$(echo $FILENAME | sed 's/[^a-zA-Z0-9]//g')" # Name of executable file
-	# If mainprog.c or mainprog.cpp exists, copy it to code.c and append content of user's written code
+	# If precode.* or postcode.* exists, copy it to code.c and append content of user's written code
 	# or function to code.c
-	if [ "$EXT" = "c" ] && [ -f "$PROBLEMPATH/mainprog.c" ]; then
-		shj_log "mainprog.c found! user's code has been appended."
-		cp $PROBLEMPATH/mainprog.c code.c
-		cat $PROBLEMPATH/$UN/$FILENAME.$EXT >> code.c
-	elif [ "$EXT" = "cpp" ] && [ -f "$PROBLEMPATH/mainprog.cpp" ]; then
-		shj_log "mainprog.cpp found! user's code has been appended."
-		cp $PROBLEMPATH/mainprog.cpp code.c
-		cat $PROBLEMPATH/$UN/$FILENAME.$EXT >> code.c
+	if [ "$EXT" = "c" ]; then
+		if [ -f "$PROBLEMPATH/precode.c" ]; then
+			cp $PROBLEMPATH/precode.c code.c
+			cat $PROBLEMPATH/$UN/$FILENAME.$EXT >> code.c
+			shj_log "precode.c found! User's code has been appended into it."
+		else
+			cp $PROBLEMPATH/$UN/$FILENAME.$EXT code.c
+		fi
+		if [ -f "$PROBLEMPATH/postcode.c" ]; then
+			cat $PROBLEMPATH/postcode.c >> code.c
+			shj_log "postcode.c found! It has been appended into user's code."
+		fi
 	else
-		cp $PROBLEMPATH/$UN/$FILENAME.$EXT code.c
+		if [ -f "$PROBLEMPATH/precode.cpp" ]; then
+			cp $PROBLEMPATH/precode.cpp code.c
+			cat $PROBLEMPATH/$UN/$FILENAME.$EXT >> code.c
+			shj_log "precode.cpp found! User's code has been appended into it."
+		else
+			cp $PROBLEMPATH/$UN/$FILENAME.$EXT code.c
+		fi
+		if [ -f "$PROBLEMPATH/postcode.cpp" ]; then
+			cat $PROBLEMPATH/postcode.cpp >> code.c
+			shj_log "postcode.cpp found! It has been appended into user's code."
+		fi
 	fi
 	shj_log "Compiling as $EXT"
 	if $SANDBOX_ON; then

@@ -168,18 +168,18 @@ class Assignments extends CI_Controller
 			if (file_exists($path))
 				$this->zip->add_data("p{$i}/tester.cpp", file_get_contents($path));
 			
-			// Add mainprog.* into a zip file
-			$path = "$root_path/p{$i}/mainprog.cpp"; 
-			if (file_exists($path))
-				$this->zip->add_data("p{$i}/mainprog.cpp", file_get_contents($path));
+			// Add precode.* into zip file
+			$pre_files = glob("$root_path/p{$i}/precode.*");
+			if ( ! empty($pre_files) )
+				foreach ($pre_files as $pre_file)
+					$this->zip->add_data("p{$i}/".shj_basename($pre_file), file_get_contents($pre_file));
 			
-			$path = "$root_path/p{$i}/mainprog.c";
-			if (file_exists($path))
-				$this->zip->add_data("p{$i}/mainprog.c", file_get_contents($path));
 			
-			$path = "$root_path/p{$i}/mainprog.py";
-			if (file_exists($path))
-				$this->zip->add_data("p{$i}/mainprog.py", file_get_contents($path));
+			// Add postcode.* into zip file
+			$post_files = glob("$root_path/p{$i}/postcode.*");
+			if ( ! empty($post_files) )
+				foreach ($post_files as $post_file)
+					$this->zip->add_data("p{$i}/".shj_basename($post_file), file_get_contents($post_file));
 
 			// Add template.* into a zip file
 			$path = "$root_path/p{$i}/template.cpp"; 
