@@ -34,7 +34,7 @@ class Problems extends CI_Controller
 	 * @param int $assignment_id
 	 * @param int $problem_id
 	 */
-	public function index($assignment_id = NULL, $problem_id = 1)
+	public function index($assignment_id = NULL, $problem_id = 0)
 	{
 
 		// If no assignment is given, use selected assignment
@@ -81,6 +81,17 @@ class Problems extends CI_Controller
 			// $data['user_problems'] = $this->assignment_model->all_problems($assignment_id, 0, true);
 			$data['user_problems'] = $this->submit_model->all_problems_score($assignment_id, 0, true);
 		}
+
+		// For student, set $problem_id to one of first problem they didn't complete
+		if ( $this->user->level == 0 && $problem_id == 0 )
+			foreach ($data['user_problems'] as $problem)
+			{
+				$problem_id = $problem['id'];
+				if ( $problem['pre_score'] != 10000)
+					break;
+			}
+		else if ( $problem_id == 0 )
+			$problem_id = 1;
 
 		if ( ! is_numeric($problem_id) || $problem_id < 1)
 			show_404();
