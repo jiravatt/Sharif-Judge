@@ -165,7 +165,7 @@ class Assignments extends CI_Controller
 			$this->zip->read_dir($path, FALSE, $root_path);
 
 			$path = "$root_path/p{$i}/tester.cpp";
-			if (file_exists($path))
+			if ( ! empty(glob($path)) )
 				$this->zip->add_data("p{$i}/tester.cpp", file_get_contents($path));
 			
 			// Add precode.* into zip file
@@ -173,14 +173,14 @@ class Assignments extends CI_Controller
 			if ( ! empty($pre_files) )
 				foreach ($pre_files as $pre_file)
 					$this->zip->add_data("p{$i}/".shj_basename($pre_file), file_get_contents($pre_file));
-			
-			
+
+
 			// Add postcode.* into zip file
 			$post_files = glob("$root_path/p{$i}/postcode.*");
 			if ( ! empty($post_files) )
 				foreach ($post_files as $post_file)
 					$this->zip->add_data("p{$i}/".shj_basename($post_file), file_get_contents($post_file));
-
+			
 			// Add template.* into zip file
 			$template_files = glob("$root_path/p{$i}/template.*");
 			if ( ! empty($template_files) )
