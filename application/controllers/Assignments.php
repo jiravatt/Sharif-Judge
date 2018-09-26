@@ -159,10 +159,12 @@ class Assignments extends CI_Controller
 		{
 
 			$path = "$root_path/p{$i}/in";
-			$this->zip->read_dir($path, FALSE, $root_path);
+			if (file_exists($path))
+				$this->zip->read_dir($path, FALSE, $root_path);
 
 			$path = "$root_path/p{$i}/out";
-			$this->zip->read_dir($path, FALSE, $root_path);
+			if (file_exists($path))
+				$this->zip->read_dir($path, FALSE, $root_path);
 
 			$path = "$root_path/p{$i}/tester.cpp";
 			if ( ! empty(glob($path)) )
