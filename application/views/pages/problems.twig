@@ -73,8 +73,14 @@ $(document).ready(function(){
 			<tr>
 				{{ user.level > 0 ? '<th rowspan="2">#</th>' : '' }} 
 				<th rowspan="2">Problem</th>
-				<th rowspan="2">Score</th>
-				<th rowspan="2">{{ user.level > 0 ? 'Upload<br>Only' : 'Final<br/>score' }}</th>
+				{% if description_assignment.level_mode == 1 %}
+					<th rowspan="2">{{ user.level > 0 ? 'LEVEL' : 'Score' }}</th>
+					<th rowspan="2">{{ user.level > 0 ? 'Score' : 'Final<br/>Score' }}</th>
+				{% else %}
+					<th rowspan="2">Score</th>
+					<th rowspan="2">{{ user.level > 0 ? 'Upload<br/>only' : 'Final<br/>Score' }}</th>
+				{% endif %}
+				
 			</tr>
 			</thead>
 			{% for one_problem in user_problems %}
@@ -85,11 +91,12 @@ $(document).ready(function(){
 					<td>
 						<a dir="auto" href="{{ site_url("problems/#{description_assignment.id}/#{one_problem.id}") }}">{{ one_problem.name }}</a>
 					</td>
-					<td>{{ one_problem.score }}</td>
-					{% if user.level > 0 %}
-						<td>{{ one_problem.is_upload_only ? 'Yes' : 'No' }}</td>
+					{% if description_assignment.level_mode == 1 %}
+						<td>{{ user.level > 0 ? one_problem.level : one_problem.score }}</td>
+						<td>{% if user.level > 0 %}{{one_problem.score}}{% else %}{{ one_problem.pre_score == -1 ? '-' : one_problem.final_score }}{% endif %}</td>
 					{% else %}
-						<td>{{ one_problem.pre_score == -1 ? '-' : one_problem.final_score }}</td>
+						<td>{{ one_problem.score }}</td>
+						<td>{% if user.level > 0 %}{{ one_problem.is_upload_only ? 'Yes' : 'No' }}{% else %}{{ one_problem.pre_score == -1 ? '-' : one_problem.final_score }}{% endif %}</td>
 					{% endif %}
 				</tr>
 			{% endfor %}
