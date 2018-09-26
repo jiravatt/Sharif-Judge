@@ -181,41 +181,11 @@ class Assignments extends CI_Controller
 				foreach ($post_files as $post_file)
 					$this->zip->add_data("p{$i}/".shj_basename($post_file), file_get_contents($post_file));
 
-			// Add template.* into a zip file
-			$path = "$root_path/p{$i}/template.cpp"; 
-			if (file_exists($path))
-				$this->zip->add_data("p{$i}/template.cpp", file_get_contents($path));
-			
-			$path = "$root_path/p{$i}/template.c";
-			if (file_exists($path))
-				$this->zip->add_data("p{$i}/template.c", file_get_contents($path));
-			
-			$path = "$root_path/p{$i}/template.py3";
-			if (file_exists($path))
-				$this->zip->add_data("p{$i}/template.py3", file_get_contents($path));
-			
-			$path = "$root_path/p{$i}/template.py2";
-			if (file_exists($path))
-				$this->zip->add_data("p{$i}/template.py2", file_get_contents($path));
-			
-			$path = "$root_path/p{$i}/template.java";
-			if (file_exists($path))
-				$this->zip->add_data("p{$i}/template.java", file_get_contents($path));
-
-			$pdf_files = glob("$root_path/p{$i}/*.pdf");
-			if ($pdf_files)
-			{
-				$path = $pdf_files[0];
-				$this->zip->add_data("p{$i}/".shj_basename($path), file_get_contents($path));
-			}
-
-			$path = "$root_path/p{$i}/desc.html";
-			if (file_exists($path))
-				$this->zip->add_data("p{$i}/desc.html", file_get_contents($path));
-
-			$path = "$root_path/p{$i}/desc.md";
-			if (file_exists($path))
-				$this->zip->add_data("p{$i}/desc.md", file_get_contents($path));
+			// Add template.* into zip file
+			$template_files = glob("$root_path/p{$i}/template.*");
+			if ( ! empty($template_files) )
+				foreach ($template_files as $template_file)
+					$this->zip->add_data("p{$i}/".shj_basename($template_file), file_get_contents($template_file));
 		}
 
 		$pdf_files = glob("$root_path/*.pdf");
@@ -550,7 +520,7 @@ class Assignments extends CI_Controller
 
 			// Extract new test cases and descriptions in temp directory
 			$this->load->library('unzip');
-			$this->unzip->allow(array('txt', 'cpp', 'html', 'md', 'pdf', 'py', 'py2', 'java', 'c')); // To support mainprog.py + template.*
+			$this->unzip->allow(array('txt', 'cpp', 'html', 'md', 'pdf', 'py', 'py2', 'java', 'c')); // To support precode.*, postcode.*, template.*
 			$extract_result = $this->unzip->extract($u_data['full_path'], $tmp_dir);
 
 			// Remove the zip file
