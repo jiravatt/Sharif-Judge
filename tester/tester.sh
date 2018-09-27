@@ -594,6 +594,7 @@ for((i=1;i<=TST;i++)); do
 		shj_log "Killed"
 	#	echo "<span class=\"shj_o\">Killed</span>" >>$PROBLEMPATH/$UN/result.html
 		RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Killed</span>"
+		echo $RESULT_TXT >>$PROBLEMPATH/$UN/result.html
 		continue
 	fi
 
@@ -602,6 +603,7 @@ for((i=1;i<=TST;i++)); do
 		shj_log "Runtime Error"
 	#	echo "<span class=\"shj_o\">Runtime Error</span>" >>$PROBLEMPATH/$UN/result.html
 		RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Runtime Error</span>"
+		echo $RESULT_TXT >>$PROBLEMPATH/$UN/result.html
 		continue
 	fi
 	
