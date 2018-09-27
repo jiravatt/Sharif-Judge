@@ -469,7 +469,8 @@ PASSEDTESTS=0
 
 for((i=1;i<=TST;i++)); do
 	shj_log "\n=== TEST $i ==="
-	echo "<span class=\"shj_b\">Test $i</span>" >>$PROBLEMPATH/$UN/result.html
+#	echo "<span class=\"shj_b\">Test $i</span>" >>$PROBLEMPATH/$UN/result.html
+	RESULT_TXT="<span class=\"shj_b\">Test $i</span>: "
 	
 	touch err
 	
@@ -482,7 +483,9 @@ for((i=1;i<=TST;i++)); do
 		EXITCODE=$?
 		if grep -iq -m 1 "Too small initial heap" out || grep -q -m 1 "java.lang.OutOfMemoryError" err; then
 			shj_log "Memory Limit Exceeded"
-			echo "<span class=\"shj_o\">Memory Limit Exceeded</span>" >>$PROBLEMPATH/$UN/result.html
+		#	echo "<span class=\"shj_o\">Memory Limit Exceeded</span>" >>$PROBLEMPATH/$UN/result.html
+			RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Memory Limit Exceeded</span>"
+			echo $RESULT_TXT >>$PROBLEMPATH/$UN/result.html
 			continue
 		fi
 		if grep -q -m 1 "Exception in" err; then # show Exception
@@ -491,10 +494,13 @@ for((i=1;i<=TST;i++)); do
 			shj_log "Exception: $javaexceptionname\nMaybe at:$javaexceptionplace"
 			# if DISPLAY_JAVA_EXCEPTION_ON is true and the exception is in the trusted list, we show the exception name
 			if $DISPLAY_JAVA_EXCEPTION_ON && grep -q -m 1 "^$javaexceptionname\$" ../java_exceptions_list; then
-				echo "<span class=\"shj_o\">Runtime Error ($javaexceptionname)</span>" >>$PROBLEMPATH/$UN/result.html
+			#	echo "<span class=\"shj_o\">Runtime Error ($javaexceptionname)</span>" >>$PROBLEMPATH/$UN/result.html
+				RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Runtime Error ($javaexceptionname)</span>"
 			else
-				echo "<span class=\"shj_o\">Runtime Error</span>" >>$PROBLEMPATH/$UN/result.html
+			#	echo "<span class=\"shj_o\">Runtime Error</span>" >>$PROBLEMPATH/$UN/result.html
+				RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Runtime Error</span>"
 			fi
+			echo $RESULT_TXT >>$PROBLEMPATH/$UN/result.html
 			continue
 		fi
 	elif [ "$EXT" = "c" ] || [ "$EXT" = "cpp" ]; then
@@ -548,23 +554,33 @@ for((i=1;i<=TST;i++)); do
 		if grep -q "SHJ_TIME" err; then
 			t=`grep "SHJ_TIME" err|cut -d" " -f3`
 			shj_log "Time Limit Exceeded ($t s)"
-			echo "<span class=\"shj_o\">Time Limit Exceeded</span>" >>$PROBLEMPATH/$UN/result.html
+		#	echo "<span class=\"shj_o\">Time Limit Exceeded</span>" >>$PROBLEMPATH/$UN/result.html
+			RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Time Limit Exceeded</span>"
+			echo $RESULT_TXT >>$PROBLEMPATH/$UN/result.html
 			continue
 		elif grep -q "SHJ_MEM" err; then
 			shj_log "Memory Limit Exceeded"
-			echo "<span class=\"shj_o\">Memory Limit Exceeded</span>" >>$PROBLEMPATH/$UN/result.html
+		#	echo "<span class=\"shj_o\">Memory Limit Exceeded</span>" >>$PROBLEMPATH/$UN/result.html
+			RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Memory Limit Exceeded</span>"
+			echo $RESULT_TXT >>$PROBLEMPATH/$UN/result.html
 			continue
 		elif grep -q "SHJ_HANGUP" err; then
 			shj_log "Hang Up"
-			echo "<span class=\"shj_o\">Process hanged up</span>" >>$PROBLEMPATH/$UN/result.html
+		#	echo "<span class=\"shj_o\">Process hanged up</span>" >>$PROBLEMPATH/$UN/result.html
+			RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Process hanged up</span>"
+			echo $RESULT_TXT >>$PROBLEMPATH/$UN/result.html
 			continue
 		elif grep -q "SHJ_SIGNAL" err; then
 			shj_log "Killed by a signal"
-			echo "<span class=\"shj_o\">Killed by a signal</span>" >>$PROBLEMPATH/$UN/result.html
+		#	echo "<span class=\"shj_o\">Killed by a signal</span>" >>$PROBLEMPATH/$UN/result.html
+			RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Killed by a signal</span>"
+			echo $RESULT_TXT >>$PROBLEMPATH/$UN/result.html
 			continue
 		elif grep -q "SHJ_OUTSIZE" err; then
 			shj_log "Output Size Limit Exceeded"
-			echo "<span class=\"shj_o\">Output Size Limit Exceeded</span>" >>$PROBLEMPATH/$UN/result.html
+		#	echo "<span class=\"shj_o\">Output Size Limit Exceeded</span>" >>$PROBLEMPATH/$UN/result.html
+			RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Output Size Limit Exceeded</span>"
+			echo $RESULT_TXT >>$PROBLEMPATH/$UN/result.html
 			continue
 		fi
 	else
@@ -576,14 +592,16 @@ for((i=1;i<=TST;i++)); do
 		#shj_log "Time Limit Exceeded (Exit code=$EXITCODE)"
 		#echo "<span style='color: orange;'>Time Limit Exceeded</span>" >>$PROBLEMPATH/$UN/result.html
 		shj_log "Killed"
-		echo "<span class=\"shj_o\">Killed</span>" >>$PROBLEMPATH/$UN/result.html
+	#	echo "<span class=\"shj_o\">Killed</span>" >>$PROBLEMPATH/$UN/result.html
+		RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Killed</span>"
 		continue
 	fi
 
 
 	if [ $EXITCODE -ne 0 ]; then
 		shj_log "Runtime Error"
-		echo "<span class=\"shj_o\">Runtime Error</span>" >>$PROBLEMPATH/$UN/result.html
+	#	echo "<span class=\"shj_o\">Runtime Error</span>" >>$PROBLEMPATH/$UN/result.html
+		RESULT_TXT="${RESULT_TXT}<span class=\"shj_o\">Runtime Error</span>"
 		continue
 	fi
 	
@@ -617,12 +635,15 @@ for((i=1;i<=TST;i++)); do
 
 	if $ACCEPTED; then
 		shj_log "ACCEPTED"
-		echo "<span class=\"shj_g\">ACCEPT</span>" >>$PROBLEMPATH/$UN/result.html
+	#	echo "<span class=\"shj_g\">ACCEPT</span>" >>$PROBLEMPATH/$UN/result.html
+		RESULT_TXT="${RESULT_TXT}<span class=\"shj_g\">ACCEPT</span>"
 		((PASSEDTESTS=PASSEDTESTS+1))
 	else
 		shj_log "WRONG"
-		echo "<span class=\"shj_r\">WRONG</span>" >>$PROBLEMPATH/$UN/result.html
+	#	echo "<span class=\"shj_r\">WRONG</span>" >>$PROBLEMPATH/$UN/result.html
+		RESULT_TXT="${RESULT_TXT}<span class=\"shj_r\">WRONG</span>"
 	fi
+	echo $RESULT_TXT >>$PROBLEMPATH/$UN/result.html
 done
 
 
