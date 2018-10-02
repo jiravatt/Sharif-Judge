@@ -71,6 +71,7 @@ class Assignment_model extends CI_Model
 		{
 			$before = $this->db->get_where('assignments', array('id'=>$id))->row_array();
 			unset($assignment['total_submits']);
+			unset($assignment['max_level']);
 			$this->db->where('id', $id)->update('assignments', $assignment);
 			// each time we edit an assignment, we should update coefficient of all submissions of that assignment
 			if ($assignment['forever'] == 0)
