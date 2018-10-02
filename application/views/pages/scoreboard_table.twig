@@ -32,7 +32,10 @@
 	{% for problem in problems %}
 	<td>
 		{% if scores[sc_username][problem.id].score is defined %}
-			{{ scores[sc_username][problem.id].score }}{{ assignment.forever ? '' : '<br><span class="tiny_text" title="Time">{{ time_hhmm(scores[sc_username][problem.id].time) }}</span>' }}
+			{{ scores[sc_username][problem.id].score }}
+			{% if assignment.forever == 0 %}
+				<br><span class="tiny_text" title="Time">{{ time_hhmm(scores[sc_username][problem.id].time) }}</span>
+			{% endif %}
 		{% else %}
 			-
 		{% endif %}
@@ -40,7 +43,9 @@
 	{% endfor %}
 	<td>
 	<span style="font-weight: bold;">{{ scoreboard['score'][loop.index0] }}</span>
-	{{ assignment.forever ? '' : '<br><span class="tiny_text" title="Total Time + Submit Penalty">{{ time_hhmm(scoreboard["submit_penalty"][loop.index0]) }}</span>' }}
+	{% if assignment.forever == 0 %}
+		<br><span class="tiny_text" title="Total Time + Submit Penalty">{{ time_hhmm(scoreboard["submit_penalty"][loop.index0]) }}</span>
+	{% endif %}
 	</td>
 	</tr>
 {% endfor %}
