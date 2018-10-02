@@ -44,12 +44,8 @@ $(document).ready(function(){
 	var editor = ace.edit("code_div");
 	var textarea = $('#content');
 	editor.session.setMode("ace/mode/text");
-	//editor.setTheme("ace/theme/chrome");
 	editor.setOptions({
 		fontSize: 15,
-        // enableBasicAutocompletion: true,
-        // enableSnippets: true,
-        // enableLiveAutocompletion: false,
 		showPrintMargin: false
     });
 	editor.getSession().setUseSoftTabs(false);
@@ -98,7 +94,6 @@ $(document).ready(function(){
 				},
 				success: function (response) {
 					if (response.done) {
-						//editor.setOption("enableBasicAutocompletion", true);
 						editor.session.setValue(response.data);
 					}
 				},
@@ -124,7 +119,6 @@ $(document).ready(function(){
 {% if error != 'none' %}
 <p>{{ error }}</p>
 {% else %}
- {#   <p>a = {{ code_txt }}</p> #}
 	<p>Selected assignment: <span dir="auto">{{ user.selected_assignment.name }}</span></p>
 	<p>Coefficient: {{ coefficient }}%</p>
 	{{ form_open_multipart('submit/editor') }}
