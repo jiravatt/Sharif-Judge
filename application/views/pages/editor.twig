@@ -40,15 +40,18 @@
 
 <script>
 $(document).ready(function(){
-	ace.require("ace/ext/language_tools");
 	var editor = ace.edit("code_div");
 	var textarea = $('#content');
-	editor.session.setMode("ace/mode/text");
-	editor.setOptions({
-		fontSize: 15,
-		showPrintMargin: false
-    });
-	editor.getSession().setUseSoftTabs(false);
+	ace.config.loadModule("ace/ext/language_tools", function() {
+		editor.setOptions({
+			mode: "ace/mode/text",
+			fontSize: 15,
+			showPrintMargin: false,
+			enableSnippets: true,
+			enableBasicAutocompletion: true,
+			enableLiveAutocompletion: true
+		});
+	});
 	
 	
 	$("#languages").change( function() {
