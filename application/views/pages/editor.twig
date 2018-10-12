@@ -96,7 +96,7 @@ $(document).ready(function(){
 					shj_csrf_token: shj.csrf_token
 				},
 				success: function (response) {
-					if (response.done) {
+					if (response.done && response.data != null) {
 						editor.session.setValue(response.data);
 					}
 				},
